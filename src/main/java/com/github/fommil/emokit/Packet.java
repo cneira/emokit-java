@@ -35,6 +35,13 @@ public final class Packet implements Comparable<Packet> {
     private final byte[] frame;
     private final Map<Sensor, Integer> quality;
 
+    public Packet() {
+        battery = 0;
+        timestamp = 0;
+        frame = new byte[0];
+        quality = null;
+    }
+
     public Date getDate() {
         return new Date(timestamp);
     }

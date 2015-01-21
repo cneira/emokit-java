@@ -1,8 +1,8 @@
 // Copyright Samuel Halliday 2012
 package com.github.fommil.emokit;
 
-import com.github.fommil.emokit.jpa.EmotivDatum;
-import com.github.fommil.emokit.jpa.EmotivSession;
+//import com.github.fommil.emokit.jpa.EmotivDatum;
+//import com.github.fommil.emokit.jpa.EmotivSession;
 import com.google.common.collect.Lists;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
@@ -37,34 +37,6 @@ import java.util.logging.Level;
 @Log
 @NotThreadSafe
 public final class Emotiv implements Closeable {
-
-    public static void main(String[] args) throws Exception {
-        Emotiv emotiv = new Emotiv();
-
-        final EmotivSession session = new EmotivSession();
-        session.setName("My Session");
-        session.setNotes("My Notes for " + emotiv.getSerial());
-
-        final Condition condition = new ReentrantLock().newCondition();
-
-        emotiv.addEmotivListener(new EmotivListener() {
-            @Override
-            public void receivePacket(Packet packet) {
-                EmotivDatum datum = EmotivDatum.fromPacket(packet);
-                datum.setSession(session);
-                Emotiv.log.info(datum.toString());
-            }
-
-            @Override
-            public void connectionBroken() {
-                condition.signal();
-            }
-        });
-
-       emotiv.start();
-       condition.await();
-    }
-
 
     private final EmotivHid raw;
     private final AtomicBoolean accessed = new AtomicBoolean();
@@ -109,7 +81,7 @@ public final class Emotiv implements Closeable {
                 try {
                     poller();
                 } catch (Exception e) {
-                    Emotiv.log.log(Level.SEVERE, "Problem when polling", e);
+                //    Emotiv.log.log(Level.SEVERE, "Problem when polling", e);
                     try {
                         close();
                     } catch (IOException ignored) {
@@ -127,8 +99,8 @@ public final class Emotiv implements Closeable {
     private void poller() throws TimeoutException, IOException, BadPaddingException, IllegalBlockSizeException {
         byte[] bytes = new byte[EmotivHid.BUFSIZE];
 
-        while (!raw.isClosed()) {
-            raw.poll(bytes);
+        //while (!raw.isClosed()) {
+          while(  raw.poll(bytes) != null){
 
             long timestamp = System.currentTimeMillis();
             byte[] decrypted = cipher.doFinal(bytes);
